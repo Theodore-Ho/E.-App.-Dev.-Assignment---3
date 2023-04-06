@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Ajax Assignment</title>
+    <link rel="shortcut icon" href="favicon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js" integrity="sha512-57oZ/vW8ANMjR/KQ6Be9v/+/h6bq9/l3f0Oc7vn6qMqyhvPd1cvKBRWWpzu0QoneImqr2SkmO4MSqU+RpHom3Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.bundle.min.js" integrity="sha512-i9cEfJwUwViEPFKdC1enz4ZRGBj8YQo6QByFTF92YXHi7waCqyexvRD75S5NVTsSiTv7rKWqG9Y5eFxmRsOn0A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="index.js"></script>
+    <style>
+html, body {
+    height: 100%;
+}
+#wrap {
+    min-height: 100%;
+}
+#main {
+    overflow:auto;
+    padding-bottom:40px;
+}
+#container {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+#footer {
+    position: relative;
+    margin-top: -40px;
+    width: 100%;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    color: #014073;
+    font-size: 0.8em;
+    background-color: #f8f8f8;
+    text-align: center;
+    border-top-style: groove;
+}
+a {
+    text-decoration: none;
+}
+#txt-content {
+    font-size: 16px;
+}
+.txt-content-paragraph {
+    position: relative;
+}
+.rotate {
+    animation: rotation 5s linear infinite;
+}
+@keyframes rotation {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+#drag-btn {
+    height: 50px;
+    width: 50px;
+    border: solid 1px;
+    position: absolute;
+    right: 0;
+    margin-top: -50px;
+    text-align: center;
+    line-height: 50px;
+}
+#footer a {
+    color: #014073;
+}
+#table-placeholder {
+    height: 200px;
+    border: dashed #000000;
+    border-radius: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.btn-primary {
+    color: #000000;
+    background-color: #FFFFFF;
+    border-color: #000000;
+}
+.btn-primary:hover {
+    color: #FFFFFF;
+    background-color: #333333;
+    border-color: #000000;
+}
+.table td {
+    text-align: center;
+    vertical-align: middle;
+}
+.nav-link {
+    cursor: pointer;
+}
+    </style>
+</head>
+<body>
+
+<div id="wrap">
+    <div id="main">
+        <div id="header">
+            <nav class="navbar navbar-expand-lg bg-light">
+                <div class="container-fluid">
+                    <span class="navbar-brand">Ajax Assignment</span>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="navbar-nav me-auto">
+                            <li class="nav-item" id="effect_1">
+                                <span class="nav-link" aria-current="page" id="effect_1_btn">Effect 1</span>
+                            </li>
+                            <li class="nav-item" id="effect_2">
+                                <span class="nav-link" aria-current="page" id="effect_2_btn">Effect 2</span>
+                            </li>
+                            <li class="nav-item" id="effect_3">
+                                <span class="nav-link" aria-current="page" id="effect_3_btn">Effect 3</span>
+                            </li>
+                            <li class="nav-item" id="effect_4">
+                                <span class="nav-link" aria-current="page" id="effect_4_btn">Effect 4</span>
+                            </li>
+                            <li class="nav-item" id="effect_5">
+                                <span class="nav-link" aria-current="page" id="effect_5_btn">Effect 5</span>
+                            </li>
+                            <li class="nav-item" id="effect_6">
+                                <span class="nav-link" aria-current="page" id="effect_6_btn">Effect 6</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </div>
+        <div class="container" id="container">
+            <div id="txt-content">
+                <p>This website utilizes AJAX technology to access JSON objects.</p>
+                <div class="txt-content-paragraph" id="txt-content-ajax">
+                    <h5>What is Ajax?</h5>
+                    <p>Ajax (short for "Asynchronous JavaScript and XML") is a set of web development techniques that uses various web technologies on the client-side to create asynchronous web applications. With Ajax, web applications can send and retrieve data from a server asynchronously (in the background) without interfering with the display and behaviour of the existing page. By decoupling the data interchange layer from the presentation layer, Ajax allows web pages and, by extension, web applications, to change content dynamically without the need to reload the entire page. In practice, modern implementations commonly utilize JSON instead of XML.</p>
+                    <p>Ajax is not a technology, but rather a programming concept. HTML and CSS can be used in combination to mark up and style information. The webpage can be modified by JavaScript to dynamically display—and allow the user to interact with the new information. The built-in XMLHttpRequest object is used to execute Ajax on webpages, allowing websites to load content onto the screen without refreshing the page. Ajax is not a new technology, nor is it a new language. Instead, it is existing technologies used in a new way.</p>
+                    <p style="font-style: italic">From: <a href="https://en.wikipedia.org/wiki/Ajax_(programming)">Ajax (programming) - Wikipedia</a>, CC BY-SA 3.0</p>
+                    <div id="drag-btn" style="cursor: pointer; background-color: antiquewhite; display: none">DRAG</div>
+                </div>
+                <div class="txt-content-paragraph" id="txt-content-json">
+                    <h5>What is JSON?</h5>
+                    <p>JSON (JavaScript Object Notation, pronounced) is an open standard file format and data interchange format that uses human-readable text to store and transmit data objects consisting of attribute–value pairs and arrays (or other serializable values). It is a common data format with diverse uses in electronic data interchange, including that of web applications with servers.</p>
+                    <p>JSON is a language-independent data format. It was derived from JavaScript, but many modern programming languages include code to generate and parse JSON-format data. JSON filenames use the extension .json.</p>
+                    <p>Douglas Crockford originally specified the JSON format in the early 2000s. He and Chip Morningstar sent the first JSON message in April 2001.</p>
+                    <p style="font-style: italic">From: <a href="https://en.wikipedia.org/wiki/JSON">JSON - Wikipedia</a>, CC BY-SA 3.0</p>
+                </div>
+            </div>
+            <div class="alert alert-warning alert-dismissible fade show" id="rendering-msg" role="alert" style="display: none">
+                <span id="rendering-msg-content"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <div id="table-area">
+                <div id="table-placeholder">
+                    <button type="button" class="btn btn-primary" id="generate-table-btn">Generate Table</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="footer">
+    <span>&copy; MIT license</span> &#124;
+    <a href='https://github.com/Theodore-Ho/E.-App.-Dev.-Assignment---2'>GitHub</a> &#124;
+    <a href='mailto:he@yuhong.me'>he@yuhong.me</a>
+</div>
+</body>
+</html>
