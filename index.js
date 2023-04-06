@@ -14,7 +14,20 @@ app.get('/', function getState(req,res) {
   res.send(`index.html`);
 })
 
-// src
+// custom response
+function customResponse(req, res, next) {
+  res.result = function(status, msg, data) {
+    res.send({
+      status: status,
+      msg: msg,
+      data: data
+    });
+  }
+  next();
+}
+app.use(customResponse);
+
+// api
 const router = require('./src/router');
 app.use('/api', router);
 

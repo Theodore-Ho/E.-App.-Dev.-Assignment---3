@@ -44,11 +44,7 @@ const response = {
  * GET all colours
  * **/
 router.get("/colours", (req, res) => {
-    res.send({
-        status: response.SUCCESS.status,
-        msg: response.SUCCESS.msg,
-        data: data
-    });
+    res.result(response.SUCCESS.status, response.SUCCESS.msg, data);
 });
 
 /**
@@ -56,25 +52,15 @@ router.get("/colours", (req, res) => {
  * **/
 router.get("/colours/:id", (req, res) => {
     if(!utils.isValidId(req.params.id)) { // validate id is integer
-        res.send({
-            status: response.INVALID_ID.status,
-            msg: response.INVALID_ID.msg
-        });
+        res.result(response.INVALID_ID.status, response.INVALID_ID.msg, null);
         return;
     }
     const id = parseInt(req.params.id);
     const colour = data.find((colour) => colour.colorId === id);
     if(colour) {
-        res.send({
-            status: response.SUCCESS.status,
-            msg: response.SUCCESS.msg,
-            data: colour
-        });
+        res.result(response.SUCCESS.status, response.SUCCESS.msg, colour);
     } else {
-        res.send({
-            status: response.ID_NOT_EXIST.status,
-            msg: response.ID_NOT_EXIST.msg
-        });
+        res.result(response.ID_NOT_EXIST.status, response.ID_NOT_EXIST.msg, null);
     }
 });
 
@@ -83,14 +69,11 @@ router.get("/colours/:id", (req, res) => {
  * **/
 router.post("/colours", (req, res) => {
     if(!utils.isValidJson(req.body.rgb.trim()) || !utils.isValidJson(req.body.hsl.trim())) { // validate rgb and hsl is json format
-        res.send({
-            status: response.INVALID_COLOUR.status,
-            msg: response.INVALID_COLOUR.msg
-        });
+        res.result(response.INVALID_COLOUR.status, response.INVALID_COLOUR.msg, null);
         return;
     }
     const newColour = {
-        colorId: 0,
+        colorId: null,
         name: req.body.name ? req.body.name.trim() : '',
         hexString: req.body.hexString ? req.body.hexString.trim() : '',
         rgb: JSON.parse(req.body.rgb.trim()),
@@ -109,31 +92,19 @@ router.post("/colours", (req, res) => {
                 data.push(newColour);
                 const newData = JSON.stringify(data);
                 fs.writeFileSync(file_path, newData);
-                res.send({
-                    status: response.SUCCESS.status,
-                    msg: response.SUCCESS.msg,
-                    data: {
-                        newColourId : newColour.colorId,
-                        uri: '/src/colours/' + newColour.colorId // I don't really understand why return uri
-                    }
-                });
+                const responseData = {
+                    newColourId : newColour.colorId,
+                    uri: '/api/colours/' + newColour.colorId // I don't really understand why required return uri
+                };
+                res.result(response.SUCCESS.status, response.SUCCESS.msg, responseData);
             } else {
-                res.send({
-                    status: response.INVALID_COLOUR.status,
-                    msg: response.INVALID_COLOUR.msg
-                });
+                res.result(response.INVALID_COLOUR.status, response.INVALID_COLOUR.msg, null);
             }
         } else {
-            res.send({
-                status: response.NAME_EXIST.status,
-                msg: response.NAME_EXIST.msg
-            });
+            res.result(response.NAME_EXIST.status, response.NAME_EXIST.msg, null);
         }
     } else {
-        res.send({
-            status: response.NAME_MISSING.status,
-            msg: response.NAME_MISSING.msg
-        });
+        res.result(response.NAME_MISSING.status, response.NAME_MISSING.msg, null);
     }
 });
 
@@ -142,21 +113,15 @@ router.post("/colours", (req, res) => {
  * **/
 router.put("/colours/:id", (req, res) => {
     if(!utils.isValidId(req.params.id)) { // validate id is integer
-        res.send({
-            status: response.INVALID_ID.status,
-            msg: response.INVALID_ID.msg
-        });
+        res.result(response.INVALID_ID.status, response.INVALID_ID.msg, null);
         return;
     }
     if(!utils.isValidJson(req.body.rgb.trim()) || !utils.isValidJson(req.body.hsl.trim())) { // validate rgb and hsl is json format
-        res.send({
-            status: response.INVALID_COLOUR.status,
-            msg: response.INVALID_COLOUR.msg
-        });
+        res.result(response.INVALID_COLOUR.status, response.INVALID_COLOUR.msg, null);
         return;
     }
     const colour = {
-        colorId: req.params.id ? parseInt(req.params.id) : 0,
+        colorId: parseInt(req.params.id),
         name: req.body.name ? req.body.name.trim() : '',
         hexString: req.body.hexString ? req.body.hexString.trim() : '',
         rgb: JSON.parse(req.body.rgb.trim()),
@@ -179,39 +144,24 @@ router.put("/colours/:id", (req, res) => {
                 if(colourExist) {
                     const newData = JSON.stringify(data);
                     fs.writeFileSync(file_path, newData);
-                    res.send({
-                        status: response.SUCCESS.status,
-                        msg: response.SUCCESS.msg
-                    });
+                    res.result(response.SUCCESS.status, response.SUCCESS.msg, null);
                 } else {
                     data.push(colour);
                     const newData = JSON.stringify(data);
                     fs.writeFileSync(file_path, newData);
-                    res.send({
-                        status: response.SUCCESS.status,
-                        msg: response.SUCCESS.msg,
-                        data: {
-                            uri: '/src/colours/' + colour.colorId // I don't really understand why return uri
-                        }
-                    });
+                    const responseData = {
+                        uri: '/api/colours/' + colour.colorId // I don't really understand why required return uri
+                    }
+                    res.result(response.SUCCESS.status, response.SUCCESS.msg, responseData);
                 }
             } else {
-                res.send({
-                    status: response.INVALID_COLOUR.status,
-                    msg: response.INVALID_COLOUR.msg
-                });
+                res.result(response.INVALID_COLOUR.status, response.INVALID_COLOUR.msg, null);
             }
         } else {
-            res.send({
-                status: response.NAME_EXIST.status,
-                msg: response.NAME_EXIST.msg
-            });
+            res.result(response.NAME_EXIST.status, response.NAME_EXIST.msg, null);
         }
     } else {
-        res.send({
-            status: response.NAME_MISSING.status,
-            msg: response.NAME_MISSING.msg
-        });
+        res.result(response.NAME_MISSING.status, response.NAME_MISSING.msg, null);
     }
 });
 
@@ -220,10 +170,7 @@ router.put("/colours/:id", (req, res) => {
  * **/
 router.delete("/colours/:id", (req, res) => {
     if(!utils.isValidId(req.params.id)) { // validate id is integer
-        res.send({
-            status: response.INVALID_ID.status,
-            msg: response.INVALID_ID.msg
-        });
+        res.result(response.INVALID_ID.status, response.INVALID_ID.msg, null);
         return;
     }
     const id = parseInt(req.params.id);
@@ -232,15 +179,9 @@ router.delete("/colours/:id", (req, res) => {
         data.splice(index, 1);
         const newData = JSON.stringify(data);
         fs.writeFileSync(file_path, newData);
-        res.send({
-            status: response.SUCCESS.status,
-            msg: response.SUCCESS.msg
-        });
+        res.result(response.SUCCESS.status, response.SUCCESS.msg, null);
     } else {
-        res.send({
-            status: response.ID_NOT_EXIST.status,
-            msg: response.ID_NOT_EXIST.msg
-        });
+        res.result(response.ID_NOT_EXIST.status, response.ID_NOT_EXIST.msg, null);
     }
 });
 
@@ -248,20 +189,14 @@ router.delete("/colours/:id", (req, res) => {
  * Edit colour without id
  * **/
 router.put("/colours", (req, res) => {
-    res.send({
-        status: response.ID_MISSING.status,
-        msg: response.ID_MISSING.msg
-    });
+    res.result(response.ID_MISSING.status, response.ID_MISSING.msg, null);
 });
 
 /**
  * delete colour without id
  * **/
 router.delete("/colours", (req, res) => {
-    res.send({
-        status: response.ID_MISSING.status,
-        msg: response.ID_MISSING.msg
-    });
+    res.result(response.ID_MISSING.status, response.ID_MISSING.msg, null);
 });
 
 module.exports = router;
