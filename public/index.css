@@ -66,15 +66,13 @@ html, body {
     border-left: 1px solid;
     border-right: 1px solid;
     padding: 10px;
-}
-#panel-center-top {
-    flex: 8;
+    display: flex;
+    justify-content: center;
 }
 .form-label {
     margin-bottom: 0 !important;
 }
 #panel-center-middle {
-    flex: 1;
     margin-top: 10px;
     border-bottom: 1px dotted;
 }
@@ -95,7 +93,6 @@ html, body {
 }
 #panel-center-bottom {
     margin-top: 10px;
-    flex: 1;
     display: flex;
     justify-content: center;
     align-items: center;

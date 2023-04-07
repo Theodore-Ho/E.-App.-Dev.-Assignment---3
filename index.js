@@ -2,8 +2,10 @@
 const express = require('express');
 const app = express();
 
-// post data body
-app.use(express.urlencoded({ extended: true }));
+// bodyParser
+const bodyParser = require('body-parser');
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // static resources
 app.use(express.static('./public'));

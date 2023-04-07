@@ -1,3 +1,5 @@
+let newColourPanelStatus = false;
+
 $(document).ready(function() {
     initBackground();
     generateColourList().then(() => {});
@@ -12,7 +14,11 @@ $(document).ready(function() {
 $(document).on("click", ".colour-item", function() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
     const colour_id = $(this).attr("colour-id");
-    generateDetailColour(colour_id).then(() => {});
+    generateDetailColour(colour_id).then(() => {
+        if(newColourPanelStatus) {
+            restoreColourPanel();
+        }
+    });
 });
 
 $(document).on("click", "#next-colour-btn", function() {
@@ -55,6 +61,22 @@ $(document).on("click", "#confirm-delete", function() {
     deleteColour().then(() => {});
 });
 
+$(document).on("click", "#save-btn", function() {
+    saveColour().then(() => {});
+});
+
+$(document).on("click", "#new-btn", function() {
+    newColourPanel();
+});
+
+$(document).on("click", "#cancel-btn", function() {
+    cancelNewColour().then(() => {});
+});
+
+$(document).on("click", "#save-new-btn", function() {
+    saveNewColour().then(() => {});
+});
+
 function initBackground() {
     const colour = getCookie("background");
     if(colour && colour.length > 0 && /^#?([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(colour)) {
@@ -94,9 +116,9 @@ function renderColourDetailPanel(colour) {
     $("#active-color-r").val(colour.rgb.r);
     $("#active-color-g").val(colour.rgb.g);
     $("#active-color-b").val(colour.rgb.b);
-    $("#active-color-s").val(colour.hsl.h);
-    $("#active-color-l").val(colour.hsl.s);
-    $("#active-color-h").val(colour.hsl.l);
+    $("#active-color-h").val(colour.hsl.h);
+    $("#active-color-s").val(colour.hsl.s);
+    $("#active-color-l").val(colour.hsl.l);
     $("#pagination-id").val(colour.colorId);
     $("#active-colour").css("background-color", colour.hexString);
     setCurrentColourId(colour.colorId);
@@ -168,7 +190,7 @@ async function confirmDeleteColour() {
 
 async function deleteColour() {
     const id = getCookie("colourId");
-    const res = await deleteColourById(id);
+    const res = await doDeleteColour(id);
     $("#confirm-delete-modal").css("display", "none");
     if(res.data.status === 200) {
         await generateColourList();
@@ -178,6 +200,98 @@ async function deleteColour() {
         const toast = new bootstrap.Toast(toastAlert);
         toast.show();
     }
+}
+
+async function saveColour() {
+    const id = getCookie("colourId");
+    const requestBody = generateRequestBody();
+    const res = await doSaveColour(id, requestBody);
+    if(res.data.status === 200) {
+        await generateColourList();
+        $("#toast-success-msg").html("Save Success");
+        const toastAlert = $("#toast-alert-success");
+        const toast = new bootstrap.Toast(toastAlert);
+        toast.show();
+    }
+}
+
+function newColourPanel() {
+    newColourPanelStatus = true;
+    $("#colour-id-block").css("display", "none");
+    $("#pagination-nav").css("display", "none");
+    $("#delete-btn-div").css("display", "none");
+    $("#restore-btn-div").css("display", "none");
+    $("#save-btn-div").css("display", "none");
+    $("#cancel-btn-div").css("display", "block");
+    $("#save-new-btn-div").css("display", "block");
+    $("#active-color-id").val("");
+    $("#active-color-name").val("");
+    $("#active-color-hex").val("#ffffff");
+    $("#active-color-r").val(255);
+    $("#active-color-g").val(255);
+    $("#active-color-b").val(255);
+    $("#active-color-h").val(0);
+    $("#active-color-s").val(0);
+    $("#active-color-l").val(100);
+    $("#active-colour").css("background-color", "#ffffff");
+}
+
+function restoreColourPanel() {
+    newColourPanelStatus = false;
+    $("#colour-id-block").css("display", "block");
+    $("#pagination-nav").css("display", "block");
+    $("#delete-btn-div").css("display", "block");
+    $("#restore-btn-div").css("display", "block");
+    $("#save-btn-div").css("display", "block");
+    $("#cancel-btn-div").css("display", "none");
+    $("#save-new-btn-div").css("display", "none");
+}
+
+async function cancelNewColour() {
+    restoreColourPanel();
+    const id = getCookie("colourId");
+    await generateDetailColour(id);
+}
+
+async function saveNewColour() {
+    const requestBody = generateRequestBody();
+    let res = await doSaveNewColour(requestBody);
+    if(res.data.status === 200) {
+        $("#toast-success-msg").html("Add Success");
+        const toastAlert = $("#toast-alert-success");
+        const toast = new bootstrap.Toast(toastAlert);
+        toast.show();
+        await generateColourList();
+        restoreColourPanel();
+        await generateDetailColour(res.data.data.newColourId);
+    }
+}
+
+function generateRequestBody() {
+    const name = $("#active-color-name").val();
+    const hex = $("#active-color-hex").val();
+    const rgb_r = $("#active-color-r").val();
+    const rgb_g = $("#active-color-g").val();
+    const rgb_b = $("#active-color-b").val();
+    const rgb = {
+        r: rgb_r,
+        g: rgb_g,
+        b: rgb_b
+    }
+    const hsl_h = $("#active-color-h").val();
+    const hsl_s = $("#active-color-s").val();
+    const hsl_l = $("#active-color-l").val();
+    const hsl = {
+        h: hsl_h,
+        s: hsl_s,
+        l: hsl_l
+    }
+    return {
+        name: name,
+        hexString: hex,
+        rgb: rgb,
+        hsl: hsl
+    };
 }
 
 function setCurrentColourId(id) {
@@ -223,31 +337,22 @@ function getFirstColour() {
     return axios.get("/api/firstColour");
 }
 
-function deleteColourById(id) {
+function doDeleteColour(id) {
     return axios.delete("/api/colours/" + id);
+}
+
+function doSaveColour(id, data) {
+    return axios.put("/api/colours/" + id, data);
+}
+
+function doSaveNewColour(data) {
+    return axios.post("/api/colours", data);
 }
 
 axios.interceptors.response.use(
     response => {
         if (response.status === 200) {
-            if(response.data.status === 201 || response.data.status === 202 || response.data.status === 209) {
-                $("#toast-danger-msg").html(response.data.msg);
-                const toastAlert = $("#toast-alert-danger");
-                const toast = new bootstrap.Toast(toastAlert);
-                toast.show();
-                lastColour().then(() => {});
-                return Promise.resolve(response);
-            } else if(response.data.status === 203) {
-                console.log("Contains invalid colour");
-                return Promise.resolve(response);
-            } else if(response.data.status === 204) {
-                console.log("Colour name already exists");
-                return Promise.resolve(response);
-            } else if(response.data.status === 205) {
-                console.log("Colour name is missing");
-                return Promise.resolve(response);
-            } else if(response.data.status === 206) {
-                console.log("ID is missing");
+            if(response.data.status === 200) {
                 return Promise.resolve(response);
             } else if(response.data.status === 207 || response.data.status === 208) {
                 $("#toast-warning-msg").html(response.data.msg);
@@ -256,7 +361,14 @@ axios.interceptors.response.use(
                 toast.show();
                 return Promise.resolve(response);
             } else {
-                return Promise.resolve(response); // case response.data.status === 200
+                $("#toast-danger-msg").html(response.data.msg);
+                const toastAlert = $("#toast-alert-danger");
+                const toast = new bootstrap.Toast(toastAlert);
+                toast.show();
+                if(response.data.status === 201 || response.data.status === 202 || response.data.status === 206) {
+                    lastColour().then(() => {});
+                }
+                return Promise.resolve(response);
             }
         } else {
             console.log("Unexpected error");

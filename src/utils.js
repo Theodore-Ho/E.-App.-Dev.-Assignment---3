@@ -5,17 +5,17 @@ const data = require("../data/256-colors.json");
  * Validate ID is an integer
  * **/
 function isValidId(id) {
-    return !isNaN(id) && parseInt(id) === Number(id) && Number.isInteger(Number(id));
+    const regex = /^-?\d+$/
+    return regex.test(id);
 }
 
 /**
  * Validate JSON format
  * **/
-function isValidJson(jsonString) {
-    try {
-        JSON.parse(jsonString.trim());
-        return true;
-    } catch (e) {
+function isValidJson(json) {
+    if(typeof json == 'object' && json) {
+        return (json.r && json.g && json.b) || (json.h && json.s && json.l);
+    } else {
         return false;
     }
 }
@@ -30,7 +30,7 @@ function isValidName(inputColour, action) {
         return !colour;
     } else { // case "EDIT"
         if(colour) {
-            return colour.colorId === inputColour.colorId;
+            return parseInt(colour.colorId) === parseInt(inputColour.colorId);
         } else {
             return true;
         }
@@ -41,26 +41,42 @@ function isValidName(inputColour, action) {
  * Validate colour hex, rgb, hsl are valid and matched
  * **/
 function isValidColours(colour) {
-    const inputHex = colour.hexString;
-    const inputRgb = colour.rgb;
-    const inputHsl = colour.hsl;
+    let inputHex = colour.hexString;
+    let inputRgb = colour.rgb;
+    let inputHsl = colour.hsl;
     if(!inputHex || !inputRgb || !inputHsl) { // validate not empty
         return false;
     }
     if(!/^#?([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(inputHex)) { // validate hex
         return false;
     }
-    if(!(Number.isInteger(inputRgb.r) && Number.isInteger(inputRgb.g) && Number.isInteger(inputRgb.b) &&
-        inputRgb.r >= 0 && inputRgb.r <= 255 && inputRgb.g >= 0 && inputRgb.g <= 255 && inputRgb.b >= 0 && inputRgb.b <= 255)) { // validate rgb
+    const regexRgb = /^([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])$/
+    if (!(regexRgb.test(inputRgb.r.toString()) && regexRgb.test(inputRgb.g.toString()) && regexRgb.test(inputRgb.b.toString()))) {
         return false;
     }
-    if(!(Number.isInteger(inputHsl.h) && Number.isInteger(inputHsl.s) && Number.isInteger(inputHsl.l) &&
-        inputHsl.h >= 0 && inputHsl.h <= 360 && inputHsl.s >= 0 && inputHsl.s <= 100 && inputHsl.l >= 0 && inputHsl.l <= 100)) { // validate hsl
+    inputRgb = {
+        r: parseInt(inputRgb.r.toString()),
+        g: parseInt(inputRgb.g.toString()),
+        b: parseInt(inputRgb.b.toString())
+    }
+    const regexH = /^(\d{1,2}|[1-2]\d{2}|3[0-5]\d)(\.\d+)?$/g
+    const regexSl = /^(?:100|[1-9]?\d)$/
+    if (!(regexH.test(inputHsl.h.toString()) && regexSl.test(inputHsl.s.toString()) && regexSl.test(inputHsl.l.toString()))) {
         return false;
+    }
+    inputHsl = {
+        h: Math.floor(parseFloat(inputHsl.h.toString())), // accuracy does not match, round down to integer check
+        s: parseInt(inputHsl.s.toString()),
+        l: parseInt(inputHsl.l.toString())
     }
     // validate conversion
-    const targetRgb = chromatism.convert(inputHex).rgb;
-    const targetHsl = chromatism.convert(inputHex).hsl;
+    let targetRgb = chromatism.convert(inputHex).rgb;
+    let targetHsl = chromatism.convert(inputHex).hsl;
+    targetHsl = {
+        h: Math.floor(targetHsl.h), // accuracy does not match, round down to integer check
+        s: Math.floor(targetHsl.s), // accuracy does not match, round down to integer check
+        l: Math.floor(targetHsl.l) // accuracy does not match, round down to integer check
+    }
     const isSameRgb = (inputRgb.r === targetRgb.r) && (inputRgb.g === targetRgb.g) && (inputRgb.b === targetRgb.b);
     const isSameHsl = (inputHsl.h === targetHsl.h) && (inputHsl.s === targetHsl.s) && (inputHsl.l === targetHsl.l);
 

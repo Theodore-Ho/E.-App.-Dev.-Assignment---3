@@ -80,7 +80,7 @@ router.get("/colours/:id", (req, res) => {
  * Add new colour
  * **/
 router.post("/colours", (req, res) => {
-    if(!utils.isValidJson(req.body.rgb.trim()) || !utils.isValidJson(req.body.hsl.trim())) { // validate rgb and hsl is json format
+    if(!utils.isValidJson(req.body.rgb) || !utils.isValidJson(req.body.hsl)) { // validate rgb and hsl is json format
         res.result(response.INVALID_COLOUR.status, response.INVALID_COLOUR.msg, null);
         return;
     }
@@ -88,19 +88,29 @@ router.post("/colours", (req, res) => {
         colorId: null,
         name: req.body.name ? req.body.name.trim() : '',
         hexString: req.body.hexString ? req.body.hexString.trim() : '',
-        rgb: JSON.parse(req.body.rgb.trim()),
-        hsl: JSON.parse(req.body.hsl.trim())
+        rgb: req.body.rgb,
+        hsl: req.body.hsl
     };
     if(newColour.name && newColour.name.length > 0) {
         if(utils.isValidName(newColour, "ADD")) {
             if(utils.isValidColours(newColour)) {
+                newColour.rgb = {
+                    r: parseInt(newColour.rgb.r.toString()),
+                    g: parseInt(newColour.rgb.g.toString()),
+                    b: parseInt(newColour.rgb.b.toString())
+                }
+                newColour.hsl = {
+                    h: parseFloat(newColour.hsl.h.toString()),
+                    s: parseInt(newColour.hsl.s.toString()),
+                    l: parseInt(newColour.hsl.l.toString())
+                }
                 let maxId = 0;
                 data.forEach(item => {
                     if (item.colorId > maxId) {
                         maxId = item.colorId;
                     }
                 });
-                newColour.colorId = maxId + 1;
+                newColour.colorId = parseInt(maxId) + 1;
                 data.push(newColour);
                 const newData = JSON.stringify(data);
                 fs.writeFileSync(file_path, newData);
@@ -128,7 +138,7 @@ router.put("/colours/:id", (req, res) => {
         res.result(response.INVALID_ID.status, response.INVALID_ID.msg, null);
         return;
     }
-    if(!utils.isValidJson(req.body.rgb.trim()) || !utils.isValidJson(req.body.hsl.trim())) { // validate rgb and hsl is json format
+    if(!utils.isValidJson(req.body.rgb) || !utils.isValidJson(req.body.hsl)) { // validate rgb and hsl is json format
         res.result(response.INVALID_COLOUR.status, response.INVALID_COLOUR.msg, null);
         return;
     }
@@ -136,12 +146,22 @@ router.put("/colours/:id", (req, res) => {
         colorId: parseInt(req.params.id),
         name: req.body.name ? req.body.name.trim() : '',
         hexString: req.body.hexString ? req.body.hexString.trim() : '',
-        rgb: JSON.parse(req.body.rgb.trim()),
-        hsl: JSON.parse(req.body.hsl.trim())
+        rgb: req.body.rgb,
+        hsl: req.body.hsl
     };
     if(colour.name && colour.name.length > 0) {
         if(utils.isValidName(colour, "EDIT")) {
             if(utils.isValidColours(colour)) {
+                colour.rgb = {
+                    r: parseInt(colour.rgb.r.toString()),
+                    g: parseInt(colour.rgb.g.toString()),
+                    b: parseInt(colour.rgb.b.toString())
+                }
+                colour.hsl = {
+                    h: parseFloat(colour.hsl.h.toString()),
+                    s: parseInt(colour.hsl.s.toString()),
+                    l: parseInt(colour.hsl.l.toString())
+                }
                 let colourExist = false;
                 for(let item of data) {
                     if (parseInt(item.colorId) === colour.colorId) {
@@ -266,14 +286,14 @@ router.get("/firstColour", (req, res) => {
 /**
  * Edit colour without id
  * **/
-router.put("/colours", (req, res) => {
+router.put("/colours", (req, res) => { // I don't really understand the purpose of this api
     res.result(response.ID_MISSING.status, response.ID_MISSING.msg, null);
 });
 
 /**
  * delete colour without id
  * **/
-router.delete("/colours", (req, res) => {
+router.delete("/colours", (req, res) => { // I don't really understand the purpose of this api
     res.result(response.ID_MISSING.status, response.ID_MISSING.msg, null);
 });
 
