@@ -34,6 +34,7 @@ html, body {
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
     padding-top: 10px;
     padding-bottom: 10px;
+    background-color: #FFFFFF;
 }
 @media (min-width: 768px) {
     #panel {
@@ -78,7 +79,7 @@ html, body {
     border-bottom: 1px dotted;
 }
 .page-input {
-    max-width: 50px;
+    max-width: 80px;
     margin-left: 5px;
     margin-right: 5px;
 }
@@ -98,6 +99,22 @@ html, body {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+}
+.toast {
+    width: 300px;
+}
+.modal {
+    top: 0;
+    margin-top: 200px;
+}
+.modal-backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
 }
 .btn-outline-danger:hover {
     background-color: rgba(220, 53, 69, 0.3);

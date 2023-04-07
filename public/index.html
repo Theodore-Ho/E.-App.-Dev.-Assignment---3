@@ -11,16 +11,60 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.3.5/axios.min.js" integrity="sha512-nnNHpffPSgINrsR8ZAIgFUIMexORL5tPwsfktOTxVYSv+AUAILuFYWES8IHl+hhIhpFGlKvWFiz9ZEusrPcSBQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="index.js"></script>
 </head>
+
 <body>
 <div id="wrap">
     <div id="main">
+        <div class="toast-container">
+            <div class="toast align-items-center text-bg-success" role="alert" aria-live="assertive" aria-atomic="true" id="toast-alert-success">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <span id="toast-success-msg"></span>
+                    </div>
+                    <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+            <div class="toast align-items-center text-bg-warning" role="alert" aria-live="assertive" aria-atomic="true" id="toast-alert-warning">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <span id="toast-warning-msg"></span>
+                    </div>
+                    <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+            <div class="toast align-items-center text-bg-danger" role="alert" aria-live="assertive" aria-atomic="true" id="toast-alert-danger">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <span id="toast-danger-msg"></span>
+                    </div>
+                    <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+        <div class="modal" tabindex="-1" id="confirm-delete-modal" style="display: none">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Confirm Delete</h5>
+                        <button type="button" class="btn-close close-delete-modal" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p id="confirm-delete-msg"></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary close-delete-modal" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-danger" id="confirm-delete">DELETE</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div id="header">My Colour</div>
         <div class="container" id="container">
             <div id="panel">
                 <div id="panel-left">
                     <div class="d-flex flex-column align-items-center justify-content-center h-100">
                         <button type="button" class="btn btn-outline-warning mb-2">New Colour</button>
-                        <button type="button" class="btn btn-outline-secondary">Set Background</button>
+                        <button type="button" class="btn btn-outline-secondary" id="set-bg-btn">Set Background</button>
                     </div>
                 </div>
                 <div id="panel-center">
@@ -90,27 +134,28 @@
                         <nav>
                             <ul class="pagination pagination-sm justify-content-center">
                                 <li class="page-item">
-                                    <button class="page-link" aria-label="First">
+                                    <button class="page-link" id="first-colour-btn">
                                         <span aria-hidden="true">&laquo;</span>
                                     </button>
                                 </li>
                                 <li class="page-item">
-                                    <button class="page-link" aria-label="Previous">
+                                    <button class="page-link" id="previous-colour-btn">
                                         <span aria-hidden="true">&lt;</span>
                                     </button>
                                 </li>
                                 <li class="page-item">
-                                    <label>
-                                        <input type="text" class="form-control page-input form-control-sm">
-                                    </label>
-                                </li>
+                                    <div class="input-group page-input">
+                                        <label for="pagination-id"></label>
+                                        <input type="text" class="form-control form-control-sm" id="pagination-id">
+                                        <button class="page-link" type="button" id="go-colour">Go</button>
+                                    </div>
                                 <li class="page-item">
-                                    <button class="page-link" aria-label="Next">
+                                    <button class="page-link" id="next-colour-btn">
                                         <span aria-hidden="true">&gt;</span>
                                     </button>
                                 </li>
                                 <li class="page-item">
-                                    <button class="page-link" aria-label="Last">
+                                    <button class="page-link" id="last-colour-btn">
                                         <span aria-hidden="true">&raquo;</span>
                                     </button>
                                 </li>
@@ -118,14 +163,14 @@
                         </nav>
                     </div>
                     <div id="panel-center-bottom">
-                        <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
-                            <div class="btn-group btn-group-sm me-2" role="group" aria-label="First group">
-                                <button type="button" class="btn btn-outline-danger">Delete</button>
+                        <div class="btn-toolbar" role="toolbar">
+                            <div class="btn-group btn-group-sm me-2">
+                                <button type="button" class="btn btn-outline-danger" id="delete-btn">Delete</button>
                             </div>
-                            <div class="btn-group btn-group-sm me-2" role="group" aria-label="Second group">
-                                <button type="button" class="btn btn-outline-primary">Restore</button>
+                            <div class="btn-group btn-group-sm me-2">
+                                <button type="button" class="btn btn-outline-primary" id="restore-btn">Restore</button>
                             </div>
-                            <div class="btn-group btn-group-sm" role="group" aria-label="Third group">
+                            <div class="btn-group btn-group-sm">
                                 <button type="button" class="btn btn-outline-success">Save</button>
                             </div>
                         </div>

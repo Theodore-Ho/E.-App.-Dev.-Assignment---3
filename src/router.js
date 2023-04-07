@@ -36,6 +36,18 @@ const response = {
     ID_MISSING: {
         status: 206,
         msg: "ID is missing"
+    },
+    NO_NEXT_COLOUR: {
+        status: 207,
+        msg: "No next colour"
+    },
+    NO_PREVIOUS_COLOUR: {
+        status: 208,
+        msg: "No previous colour"
+    },
+    ONLY_COLOUR: {
+        status: 209,
+        msg: "Cannot delete the last remaining color"
     }
 };
 
@@ -56,7 +68,7 @@ router.get("/colours/:id", (req, res) => {
         return;
     }
     const id = parseInt(req.params.id);
-    const colour = data.find((colour) => colour.colorId === id);
+    const colour = data.find((colour) => parseInt(colour.colorId) === id);
     if(colour) {
         res.result(response.SUCCESS.status, response.SUCCESS.msg, colour);
     } else {
@@ -132,7 +144,7 @@ router.put("/colours/:id", (req, res) => {
             if(utils.isValidColours(colour)) {
                 let colourExist = false;
                 for(let item of data) {
-                    if (item.colorId === colour.colorId) {
+                    if (parseInt(item.colorId) === colour.colorId) {
                         item.name = colour.name;
                         item.hexString = colour.hexString;
                         item.rgb = colour.rgb;
@@ -174,15 +186,81 @@ router.delete("/colours/:id", (req, res) => {
         return;
     }
     const id = parseInt(req.params.id);
-    const index = data.findIndex((colour) => colour.colorId === id);
-    if (index !== -1) {
-        data.splice(index, 1);
-        const newData = JSON.stringify(data);
-        fs.writeFileSync(file_path, newData);
-        res.result(response.SUCCESS.status, response.SUCCESS.msg, null);
+    if(data.length > 1) {
+        const index = data.findIndex((colour) => parseInt(colour.colorId) === id);
+        if (index !== -1) {
+            data.splice(index, 1);
+            const newData = JSON.stringify(data);
+            fs.writeFileSync(file_path, newData);
+            res.result(response.SUCCESS.status, response.SUCCESS.msg, null);
+        } else {
+            res.result(response.ID_NOT_EXIST.status, response.ID_NOT_EXIST.msg, null);
+        }
+    } else {
+        res.result(response.ONLY_COLOUR.status, response.ONLY_COLOUR.msg, null);
+    }
+});
+
+/**
+ * GET next colour
+ * **/
+router.get("/nextColour/:id", (req, res) => {
+    if(!utils.isValidId(req.params.id)) { // validate id is integer
+        res.result(response.INVALID_ID.status, response.INVALID_ID.msg, null);
+        return;
+    }
+    const id = parseInt(req.params.id);
+    const colour = data.find((colour) => parseInt(colour.colorId) === id);
+    if(colour) {
+        const index = data.findIndex((colour) => parseInt(colour.colorId) === id);
+        if (index !== -1 && index < data.length - 1) {
+            const nextColour = data[index + 1];
+            res.result(response.SUCCESS.status, response.SUCCESS.msg, nextColour);
+        } else {
+            res.result(response.NO_NEXT_COLOUR.status, response.NO_NEXT_COLOUR.msg, null);
+        }
     } else {
         res.result(response.ID_NOT_EXIST.status, response.ID_NOT_EXIST.msg, null);
     }
+});
+
+/**
+ * GET previous colour
+ * **/
+router.get("/previousColour/:id", (req, res) => {
+    if(!utils.isValidId(req.params.id)) { // validate id is integer
+        res.result(response.INVALID_ID.status, response.INVALID_ID.msg, null);
+        return;
+    }
+    const id = parseInt(req.params.id);
+    const colour = data.find((colour) => parseInt(colour.colorId) === id);
+    if(colour) {
+        const index = data.findIndex((colour) => parseInt(colour.colorId) === id);
+        if (index > 0) {
+            const nextColour = data[index - 1];
+            res.result(response.SUCCESS.status, response.SUCCESS.msg, nextColour);
+        } else {
+            res.result(response.NO_PREVIOUS_COLOUR.status, response.NO_PREVIOUS_COLOUR.msg, null);
+        }
+    } else {
+        res.result(response.ID_NOT_EXIST.status, response.ID_NOT_EXIST.msg, null);
+    }
+});
+
+/**
+ * GET last colour
+ * **/
+router.get("/lastColour", (req, res) => {
+    const lastColour = data[data.length - 1];
+    res.result(response.SUCCESS.status, response.SUCCESS.msg, lastColour);
+});
+
+/**
+ * GET first colour
+ * **/
+router.get("/firstColour", (req, res) => {
+    const lastColour = data[0];
+    res.result(response.SUCCESS.status, response.SUCCESS.msg, lastColour);
 });
 
 /**
