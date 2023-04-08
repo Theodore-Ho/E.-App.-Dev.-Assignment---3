@@ -276,9 +276,9 @@ function changeHSL(h, s, l) {
             if(regexSL.test(l)) {
                 $("#active-color-l").css("background-color", "#FFFFFF");
                 const hsl = {
-                    h: parseFloat(h),
-                    s: parseFloat(s),
-                    l: parseFloat(l)
+                    h: parseInt(h),
+                    s: parseInt(s),
+                    l: parseInt(l)
                 };
                 const hex = chromatism.convert(hsl).hex;
                 const rgb = chromatism.convert(hsl).rgb;

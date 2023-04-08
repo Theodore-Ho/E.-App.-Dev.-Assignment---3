@@ -19,9 +19,9 @@ $(document).ready(function() {
         $("#active-color-g").val(rgb.g);
         $("#active-color-b").val(rgb.b);
         const hsl = chromatism.convert(evt.detail.hex).hsl; // convert use chromatism, make sure accuracy same as backend validation
-        $("#active-color-h").val(hsl.h.toFixed(2));
-        $("#active-color-s").val(hsl.s.toFixed(2));
-        $("#active-color-l").val(hsl.l.toFixed(2));
+        $("#active-color-h").val(Math.round(hsl.h));
+        $("#active-color-s").val(Math.round(hsl.s));
+        $("#active-color-l").val(Math.round(hsl.l));
     });
 });
 

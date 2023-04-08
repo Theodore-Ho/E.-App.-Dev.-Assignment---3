@@ -100,9 +100,9 @@ router.post("/colours", (req, res) => {
                     b: parseInt(newColour.rgb.b.toString())
                 }
                 newColour.hsl = {
-                    h: parseFloat(newColour.hsl.h.toString()),
-                    s: parseFloat(newColour.hsl.s.toString()),
-                    l: parseFloat(newColour.hsl.l.toString())
+                    h: parseInt(newColour.hsl.h.toString()), // HSL in frontend use integer
+                    s: parseInt(newColour.hsl.s.toString()),
+                    l: parseInt(newColour.hsl.l.toString())
                 }
                 let maxId = 0;
                 data.forEach(item => {
@@ -158,9 +158,9 @@ router.put("/colours/:id", (req, res) => {
                     b: parseInt(colour.rgb.b.toString())
                 }
                 colour.hsl = {
-                    h: parseFloat(colour.hsl.h.toString()),
-                    s: parseFloat(colour.hsl.s.toString()),
-                    l: parseFloat(colour.hsl.l.toString())
+                    h: parseInt(colour.hsl.h.toString()), // HSL in frontend use integer
+                    s: parseInt(colour.hsl.s.toString()),
+                    l: parseInt(colour.hsl.l.toString())
                 }
                 let colourExist = false;
                 for(let item of data) {

@@ -51,7 +51,7 @@ function isValidColours(colour) {
         return false;
     }
     const regexRgb = /^([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])$/
-    if (!(regexRgb.test(inputRgb.r.toString()) && regexRgb.test(inputRgb.g.toString()) && regexRgb.test(inputRgb.b.toString()))) {
+    if (!(regexRgb.test(inputRgb.r.toString()) && regexRgb.test(inputRgb.g.toString()) && regexRgb.test(inputRgb.b.toString()))) { // validate rgb
         return false;
     }
     inputRgb = {
@@ -61,21 +61,21 @@ function isValidColours(colour) {
     }
     const regexH = /^(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-9]{2}|3[0-5][0-9]|360)(.\d+)?$/
     const regexSl = /^(?:100|[1-9]?\d)(\.\d+)?$/
-    if (!(regexH.test(inputHsl.h.toString()) && regexSl.test(inputHsl.s.toString()) && regexSl.test(inputHsl.l.toString()))) {
+    if (!(regexH.test(inputHsl.h.toString()) && regexSl.test(inputHsl.s.toString()) && regexSl.test(inputHsl.l.toString()))) { // validate hsl
         return false;
     }
     inputHsl = {
-        h: Math.round(parseFloat(inputHsl.h.toString())), // accuracy may not match, round to integer check
-        s: Math.round(parseFloat(inputHsl.s.toString())), // accuracy may not match, round to integer check
-        l: Math.round(parseFloat(inputHsl.l.toString())) // accuracy may not match, round to integer check
+        h: parseInt(inputHsl.h.toString()), // HSL in frontend use integer
+        s: parseInt(inputHsl.s.toString()),
+        l: parseInt(inputHsl.l.toString())
     }
     // validate conversion
     let targetRgb = chromatism.convert(inputHex).rgb;
     let targetHsl = chromatism.convert(inputHex).hsl;
     targetHsl = {
         h: Math.round(targetHsl.h), // accuracy may not match, round to integer check
-        s: Math.round(targetHsl.s), // accuracy may not match, round to integer check
-        l: Math.round(targetHsl.l) // accuracy may not match, round to integer check
+        s: Math.round(targetHsl.s),
+        l: Math.round(targetHsl.l)
     }
     const isSameRgb = (inputRgb.r === targetRgb.r) && (inputRgb.g === targetRgb.g) && (inputRgb.b === targetRgb.b);
     const isSameHsl = (inputHsl.h === targetHsl.h) && (inputHsl.s === targetHsl.s) && (inputHsl.l === targetHsl.l);
