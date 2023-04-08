@@ -33,6 +33,12 @@ app.use(customResponse);
 const router = require('./src/router');
 app.use('/api', router);
 
+// 404
+const path = require('path');
+app.use((req, res, next) => {
+  res.status(404).sendFile(path.join(__dirname, 'public', '404.html'));
+});
+
 // listen port
 let port = 9999;
 app.listen(port,()=>{
