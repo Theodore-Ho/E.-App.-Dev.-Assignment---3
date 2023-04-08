@@ -11,5 +11,7 @@
     <orderEntry type="library" name="axios" level="application" />
     <orderEntry type="library" name="element-ui" level="application" />
     <orderEntry type="library" name="vue" level="application" />
+    <orderEntry type="library" name="toolcool-color-picker" level="application" />
+    <orderEntry type="library" name="chromatism" level="application" />
   </component>
 </module>

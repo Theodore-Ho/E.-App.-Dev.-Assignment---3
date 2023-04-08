@@ -1,4 +1,9 @@
 let newColourPanelStatus = false;
+const regexHex = /^#?[A-Fa-f0-9]{6}$/
+const regexRgb = /^([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])$/
+const regexH = /^(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-9]{2}|3[0-5][0-9]|360)(.\d+)?$/
+const regexSL = /^(?:100|[1-9]?\d)(\.\d+)?$/
+let timestampStart = 0;
 
 $(document).ready(function() {
     initBackground();
@@ -9,6 +14,19 @@ $(document).ready(function() {
         setCurrentColourId(0);
     }
     generateDetailColour(cookieColourId).then(() => {});
+    const $colorPicker = document.getElementById("active-colour");
+    $colorPicker.addEventListener('change', (evt) => {
+        restoreValidate();
+        $("#active-color-hex").val(evt.detail.hex.toLowerCase());
+        const rgb = chromatism.convert(evt.detail.hex).rgb; // convert use chromatism, make sure accuracy same as backend validation
+        $("#active-color-r").val(rgb.r);
+        $("#active-color-g").val(rgb.g);
+        $("#active-color-b").val(rgb.b);
+        const hsl = chromatism.convert(evt.detail.hex).hsl; // convert use chromatism, make sure accuracy same as backend validation
+        $("#active-color-h").val(hsl.h.toFixed(4));
+        $("#active-color-s").val(hsl.s.toFixed(4));
+        $("#active-color-l").val(hsl.l.toFixed(4));
+    });
 });
 
 $(document).on("click", ".colour-item", function() {
@@ -77,9 +95,140 @@ $(document).on("click", "#save-new-btn", function() {
     saveNewColour().then(() => {});
 });
 
+$(function() {
+    $("#active-color-hex").bind("input propertychange", function () {
+        changeHex($("#active-color-hex").val());
+    });
+});
+
+function changeHex(hex) {
+    if(regexHex.test(hex)) {
+        $("#active-color-hex").css("background-color", "#FFFFFF");
+        const rgb = chromatism.convert(hex).rgb;
+        const hsl = chromatism.convert(hex).hsl;
+        changeAllValue(hex, rgb, hsl);
+    } else {
+        $("#active-color-hex").css("background-color", "rgba(255, 0, 0, 0.3)");
+    }
+}
+
+$(function() {
+    $("#active-color-r").bind("input propertychange", function () {
+        changeRGB($("#active-color-r").val(), $("#active-color-g").val(), $("#active-color-b").val());
+    });
+});
+
+$(function() {
+    $("#active-color-g").bind("input propertychange", function () {
+        changeRGB($("#active-color-r").val(), $("#active-color-g").val(), $("#active-color-b").val());
+    });
+});
+
+$(function() {
+    $("#active-color-b").bind("input propertychange", function () {
+        changeRGB($("#active-color-r").val(), $("#active-color-g").val(), $("#active-color-b").val());
+    });
+});
+
+function changeRGB(r, g, b) {
+    if(regexRgb.test(r)) {
+        $("#active-color-r").css("background-color", "#FFFFFF");
+        if(regexRgb.test(g)) {
+            $("#active-color-g").css("background-color", "#FFFFFF");
+            if(regexRgb.test(b)) {
+                $("#active-color-b").css("background-color", "#FFFFFF");
+                const rgb = {
+                    r: parseInt(r),
+                    g: parseInt(g),
+                    b: parseInt(b)
+                };
+                const hex = chromatism.convert(rgb).hex;
+                const hsl = chromatism.convert(rgb).hsl;
+                changeAllValue(hex, rgb, hsl);
+            } else {
+                $("#active-color-b").css("background-color", "rgba(255, 0, 0, 0.3)");
+            }
+        } else {
+            $("#active-color-g").css("background-color", "rgba(255, 0, 0, 0.3)");
+        }
+    } else {
+        $("#active-color-r").css("background-color", "rgba(255, 0, 0, 0.3)");
+    }
+}
+
+$(function() {
+    $("#active-color-h").bind("input propertychange", function () {
+        changeHSL($("#active-color-h").val(), $("#active-color-s").val(), $("#active-color-l").val());
+    });
+});
+
+$(function() {
+    $("#active-color-s").bind("input propertychange", function () {
+        changeHSL(
+            parseFloat($("#active-color-h").val()),
+            parseFloat($("#active-color-s").val()),
+            parseFloat($("#active-color-l").val())
+        );
+    });
+});
+
+$(function() {
+    $("#active-color-l").bind("input propertychange", function () {
+        changeHSL($("#active-color-h").val(), $("#active-color-s").val(), $("#active-color-l").val());
+    });
+});
+
+function changeHSL(h, s, l) {
+    if(regexH.test(h)) {
+        $("#active-color-h").css("background-color", "#FFFFFF");
+        if(regexSL.test(s)) {
+            $("#active-color-s").css("background-color", "#FFFFFF");
+            if(regexSL.test(l)) {
+                $("#active-color-l").css("background-color", "#FFFFFF");
+                const hsl = {
+                    h: h,
+                    s: s,
+                    l: l
+                };
+                const hex = chromatism.convert(hsl).hex;
+                const rgb = chromatism.convert(hsl).rgb;
+                changeAllValue(hex, rgb, hsl);
+            } else {
+                $("#active-color-l").css("background-color", "rgba(255, 0, 0, 0.3)");
+            }
+        } else {
+            $("#active-color-s").css("background-color", "rgba(255, 0, 0, 0.3)");
+        }
+    } else {
+        $("#active-color-h").css("background-color", "rgba(255, 0, 0, 0.3)");
+    }
+}
+
+function changeAllValue(hex, rgb, hsl) {
+    $("#active-color-hex").val(hex);
+    $("#active-color-r").val(rgb.r);
+    $("#active-color-g").val(rgb.g);
+    $("#active-color-b").val(rgb.b);
+    $("#active-color-h").val(hsl.h);
+    $("#active-color-s").val(hsl.s);
+    $("#active-color-l").val(hsl.l);
+    $("#active-colour").attr("color", hex);
+    restoreValidate();
+}
+
+function restoreValidate() {
+    $("#active-color-hex").css("background-color", "#FFFFFF");
+    $("#active-color-r").css("background-color", "#FFFFFF");
+    $("#active-color-g").css("background-color", "#FFFFFF");
+    $("#active-color-b").css("background-color", "#FFFFFF");
+    $("#active-color-h").css("background-color", "#FFFFFF");
+    $("#active-color-s").css("background-color", "#FFFFFF");
+    $("#active-color-l").css("background-color", "#FFFFFF");
+}
+
 function initBackground() {
     const colour = getCookie("background");
-    if(colour && colour.length > 0 && /^#?([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(colour)) {
+    if(colour && colour.length > 0 && regexHex.test(colour)) {
         $("#wrap").css("background-color", colour);
     }
 }
@@ -120,7 +269,7 @@ function renderColourDetailPanel(colour) {
     $("#active-color-s").val(colour.hsl.s);
     $("#active-color-l").val(colour.hsl.l);
     $("#pagination-id").val(colour.colorId);
-    $("#active-colour").css("background-color", colour.hexString);
+    $("#active-colour").attr("color", colour.hexString);
     setCurrentColourId(colour.colorId);
 }
 
@@ -233,7 +382,7 @@ function newColourPanel() {
     $("#active-color-h").val(0);
     $("#active-color-s").val(0);
     $("#active-color-l").val(100);
-    $("#active-colour").css("background-color", "#ffffff");
+    $("#active-colour").attr("color", "#ffffff");
 }
 
 function restoreColourPanel() {
@@ -349,10 +498,23 @@ function doSaveNewColour(data) {
     return axios.post("/api/colours", data);
 }
 
+axios.interceptors.request.use(
+    function(config) {
+        timestampStart = Date.now();
+        return config;
+    },
+    function(error) {
+        return Promise.reject(error);
+    });
+
 axios.interceptors.response.use(
     response => {
+        const timestampEnd = Date.now();
+        const latency = Math.abs(timestampEnd - timestampStart);
+        $("#latency").html(latency);
         if (response.status === 200) {
             if(response.data.status === 200) {
+                restoreValidate();
                 return Promise.resolve(response);
             } else if(response.data.status === 207 || response.data.status === 208) {
                 $("#toast-warning-msg").html(response.data.msg);

@@ -47,7 +47,7 @@ function isValidColours(colour) {
     if(!inputHex || !inputRgb || !inputHsl) { // validate not empty
         return false;
     }
-    if(!/^#?([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(inputHex)) { // validate hex
+    if(!/^#?[A-Fa-f0-9]{6}$/.test(inputHex)) { // validate hex
         return false;
     }
     const regexRgb = /^([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])$/
@@ -59,23 +59,23 @@ function isValidColours(colour) {
         g: parseInt(inputRgb.g.toString()),
         b: parseInt(inputRgb.b.toString())
     }
-    const regexH = /^(\d{1,2}|[1-2]\d{2}|3[0-5]\d)(\.\d+)?$/g
-    const regexSl = /^(?:100|[1-9]?\d)$/
+    const regexH = /^(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-9]{2}|3[0-5][0-9]|360)(.\d+)?$/
+    const regexSl = /^(?:100|[1-9]?\d)(\.\d+)?$/
     if (!(regexH.test(inputHsl.h.toString()) && regexSl.test(inputHsl.s.toString()) && regexSl.test(inputHsl.l.toString()))) {
         return false;
     }
     inputHsl = {
-        h: Math.floor(parseFloat(inputHsl.h.toString())), // accuracy does not match, round down to integer check
-        s: parseInt(inputHsl.s.toString()),
-        l: parseInt(inputHsl.l.toString())
+        h: Math.round(parseFloat(inputHsl.h.toString())), // accuracy may not match, round to integer check
+        s: Math.round(parseFloat(inputHsl.s.toString())), // accuracy may not match, round to integer check
+        l: Math.round(parseFloat(inputHsl.l.toString())) // accuracy may not match, round to integer check
     }
     // validate conversion
     let targetRgb = chromatism.convert(inputHex).rgb;
     let targetHsl = chromatism.convert(inputHex).hsl;
     targetHsl = {
-        h: Math.floor(targetHsl.h), // accuracy does not match, round down to integer check
-        s: Math.floor(targetHsl.s), // accuracy does not match, round down to integer check
-        l: Math.floor(targetHsl.l) // accuracy does not match, round down to integer check
+        h: Math.round(targetHsl.h), // accuracy may not match, round to integer check
+        s: Math.round(targetHsl.s), // accuracy may not match, round to integer check
+        l: Math.round(targetHsl.l) // accuracy may not match, round to integer check
     }
     const isSameRgb = (inputRgb.r === targetRgb.r) && (inputRgb.g === targetRgb.g) && (inputRgb.b === targetRgb.b);
     const isSameHsl = (inputHsl.h === targetHsl.h) && (inputHsl.s === targetHsl.s) && (inputHsl.l === targetHsl.l);

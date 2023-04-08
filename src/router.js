@@ -101,8 +101,8 @@ router.post("/colours", (req, res) => {
                 }
                 newColour.hsl = {
                     h: parseFloat(newColour.hsl.h.toString()),
-                    s: parseInt(newColour.hsl.s.toString()),
-                    l: parseInt(newColour.hsl.l.toString())
+                    s: parseFloat(newColour.hsl.s.toString()),
+                    l: parseFloat(newColour.hsl.l.toString())
                 }
                 let maxId = 0;
                 data.forEach(item => {
@@ -159,8 +159,8 @@ router.put("/colours/:id", (req, res) => {
                 }
                 colour.hsl = {
                     h: parseFloat(colour.hsl.h.toString()),
-                    s: parseInt(colour.hsl.s.toString()),
-                    l: parseInt(colour.hsl.l.toString())
+                    s: parseFloat(colour.hsl.s.toString()),
+                    l: parseFloat(colour.hsl.l.toString())
                 }
                 let colourExist = false;
                 for(let item of data) {

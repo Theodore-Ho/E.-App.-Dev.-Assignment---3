@@ -9,12 +9,18 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.bundle.min.js" integrity="sha512-i9cEfJwUwViEPFKdC1enz4ZRGBj8YQo6QByFTF92YXHi7waCqyexvRD75S5NVTsSiTv7rKWqG9Y5eFxmRsOn0A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.3.5/axios.min.js" integrity="sha512-nnNHpffPSgINrsR8ZAIgFUIMexORL5tPwsfktOTxVYSv+AUAILuFYWES8IHl+hhIhpFGlKvWFiz9ZEusrPcSBQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.jsdelivr.net/npm/toolcool-color-picker/dist/toolcool-color-picker.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chromatism/3.0.0/chromatism.umd.js" integrity="sha512-1eIoyvpelWGJpmn33PfCBb3s+xZRHn2nwPf4BKRHaLRZhcgjpg6bQQzbYP1w4QJAsCdOD2EL5ea+/bu9/tq8zw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="index.js"></script>
 </head>
 
 <body>
 <div id="wrap">
     <div id="main">
+        <div id="latency-msg">
+            <p>Server based in Hong Kong</p>
+            <p>Current latency: <span id="latency">0</span> ms</p>
+        </div>
         <div class="toast-container">
             <div class="toast align-items-center text-bg-success" role="alert" aria-live="assertive" aria-atomic="true" id="toast-alert-success">
                 <div class="d-flex">
@@ -185,7 +191,12 @@
                     </div>
                 </div>
                 <div id="panel-right">
-                    <div id="active-colour"></div>
+                    <toolcool-color-picker
+                            id="active-colour"
+                            color="#B48CF4"
+                            button-width="5rem"
+                            button-height="5rem"
+                            button-padding="5px"></toolcool-color-picker>
                 </div>
             </div>
             <div id="list"></div>
